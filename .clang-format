@@ -1,0 +1,11 @@
+BasedOnStyle: Google
+IndentWidth: 4
+---
+Language: Cpp
+DerivePointerAlignment: false
+PointerAlignment: Left
+ColumnLimit: 120
+ReflowComments: false
+AccessModifierOffset: -4
+SortIncludes: false
+SortUsingDeclarations: false
