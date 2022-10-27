@@ -7,7 +7,6 @@
 #include <stdexcept>
 #include <concurrentqueue/blockingconcurrentqueue.h>
 #include <atomic>
-#include "common/cpp_version.h"
 #include <functional>
 
 namespace med {
