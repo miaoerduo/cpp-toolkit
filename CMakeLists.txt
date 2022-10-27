@@ -23,7 +23,8 @@ enable_testing()
 
 add_executable(
     cpp_toolkit_test
-    unittest/objectpool/test.cpp)
+    unittest/objectpool/test.cpp
+    unittest/threadpool/test.cpp)
 
 target_link_libraries(cpp_toolkit_test GTest::gtest_main)
 

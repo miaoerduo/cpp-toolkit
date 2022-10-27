@@ -1,3 +1,5 @@
+#pragma once
+
 #include <concurrentqueue/concurrentqueue.h>
 #include <atomic>
 #include <chrono>
