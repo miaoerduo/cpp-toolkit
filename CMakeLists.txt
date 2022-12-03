@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.14)
 project(cpp_toolkit)
 
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -26,6 +27,7 @@ add_executable(
     unittest/objectpool/test.cpp
     unittest/threadpool/test.cpp
     unittest/concurrentlrucache/test.cpp
+    unittest/configparser/test.cpp
 )
 
 target_link_libraries(cpp_toolkit_test GTest::gtest_main)
