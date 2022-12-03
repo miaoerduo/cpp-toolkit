@@ -2,7 +2,7 @@
 #include <thread>
 #include <chrono>
 #include <future>
-#include "threadpool/thread_pool.hpp"
+#include "threadpool/thread_pool.h"
 
 TEST(ThreadPool, Basic) {
     ::med::ThreadPool pool(2);
@@ -21,6 +21,6 @@ TEST(ThreadPool, Basic) {
     }
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> cost = end - start;
-    EXPECT_LE(cost.count(), 60);
+    EXPECT_LE(cost.count(), 70);
     EXPECT_EQ(sum.load(), 10);
 }

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <thread>
 
-#include "concurrentlrucache/concurrent_lru_cache.hpp"
+#include "concurrentlrucache/concurrent_lru_cache.h"
 
 #include <gtest/gtest.h>
 
