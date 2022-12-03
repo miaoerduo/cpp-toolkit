@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <memory>
 #include <functional>
+#include <vector>
 
 namespace med {
 
@@ -69,17 +70,19 @@ public:
     }
     virtual ~ConfigParser() = default;
 
-    bool RegisterField(void* data, std::string type, std::string name, std::string help,
+    void RegisterField(void* data, std::string type, std::string name, std::string help,
                        std::function<void()> reset_fn) {
         auto desc = std::make_shared<FieldDesc>(type, name, help);
         auto parser = this->field_parser_factory_->CreateFieldParser(desc);
-        return this->field_map_.emplace(name, std::make_shared<Field>(data, desc, parser, reset_fn)).second;
+        this->field_map_[name].push_back(std::make_shared<Field>(data, desc, parser, reset_fn));
     }
 
     bool Parse(void* config) {
-        for (auto&& field_pair : this->field_map_) {
-            if (!field_pair.second->Parse(config)) {
-                return false;
+        for (auto&& p : this->field_map_) {
+            for (auto&& f : p.second) {
+                if (!f->Parse(config)) {
+                    return false;
+                }
             }
         }
         return this->ParseExt(config);
@@ -87,16 +90,18 @@ public:
     virtual bool ParseExt(void* config) { return true; }
 
     void Reset() {
-        for (auto&& field_pair : this->field_map_) {
-            field_pair.second->Reset();
+        for (auto&& p : this->field_map_) {
+            for (auto&& f : p.second) {
+                f->Reset();
+            }
         }
         this->ResetExt();
     }
-    virtual void ResetExt(){};
+    virtual void ResetExt() {}
 
 public:
     std::shared_ptr<FieldParserFactory> field_parser_factory_ = nullptr;
-    std::unordered_map<std::string, std::shared_ptr<Field>> field_map_;
+    std::unordered_map<std::string, std::vector<std::shared_ptr<Field>>> field_map_;
 };
 
 #define DEFINE_NUM(v, type, name, default_val, help)                                               \
