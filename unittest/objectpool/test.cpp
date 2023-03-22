@@ -14,12 +14,13 @@ public:
 
 TEST(ObjectPool, Basic) {
     const size_t CAPACITY = 256;  // CAPACITY is not the actual capacity, the actual capacity may has little diff
-    ::med::ObjectPool<Point> pool(CAPACITY, []() { return new Point(0, 0); },
-                                  [](Point* p) {
-                                      p->x_ = 0;
-                                      p->y_ = 0;
-                                  },
-                                  [](Point* p) { delete p; });
+    ::med::ObjectPool<Point> pool(
+        CAPACITY, []() { return new Point(0, 0); },
+        [](Point* p) {
+            p->x_ = 0;
+            p->y_ = 0;
+        },
+        [](Point* p) { delete p; });
     EXPECT_EQ(pool.IdleSizeApprox(), 0);
     std::vector<Point*> point_arr;
     for (int i = 0; i < CAPACITY / 2; ++i) {
@@ -60,12 +61,13 @@ TEST(ObjectPool, Basic) {
 
 TEST(ObjectPool, GetShared) {
     const size_t CAPACITY = 256;  // CAPACITY is not the actual capacity, the actual capacity may has little diff
-    ::med::ObjectPool<Point> pool(CAPACITY, []() { return new Point(0, 0); },
-                                  [](Point* p) {
-                                      p->x_ = 0;
-                                      p->y_ = 0;
-                                  },
-                                  [](Point* p) { delete p; });
+    ::med::ObjectPool<Point> pool(
+        CAPACITY, []() { return new Point(0, 0); },
+        [](Point* p) {
+            p->x_ = 0;
+            p->y_ = 0;
+        },
+        [](Point* p) { delete p; });
     EXPECT_EQ(pool.IdleSizeApprox(), 0);
     std::vector<std::shared_ptr<Point>> point_arr;
     for (int i = 0; i < CAPACITY / 2; ++i) {
@@ -108,12 +110,13 @@ TEST(ObjectPool, MultThread) {
     const size_t CAPACITY = 256;  // CAPACITY is not the actual capacity, the actual capacity may has little diff
     const size_t THREAD_NUM = 4;
     const size_t TIMES = 1000;
-    ::med::ObjectPool<Point> pool(CAPACITY, []() { return new Point(0, 0); },
-                                  [](Point* p) {
-                                      p->x_ = 0;
-                                      p->y_ = 0;
-                                  },
-                                  [](Point* p) { delete p; });
+    ::med::ObjectPool<Point> pool(
+        CAPACITY, []() { return new Point(0, 0); },
+        [](Point* p) {
+            p->x_ = 0;
+            p->y_ = 0;
+        },
+        [](Point* p) { delete p; });
     EXPECT_EQ(pool.IdleSizeApprox(), 0);
 
     std::vector<std::thread> thread_pool;
@@ -137,4 +140,81 @@ TEST(ObjectPool, MultThread) {
         t.join();
     }
     EXPECT_LE(pool.IdleSizeApprox(), CAPACITY);
+}
+
+TEST(ObjectPool, ReturnAfterDestory) {
+    const size_t CAPACITY = 256;  // CAPACITY is not the actual capacity, the actual capacity may has little diff
+    std::shared_ptr<Point> p1 = nullptr;
+    Point* p2 = nullptr;
+    {
+        ::med::ObjectPool<Point> pool(
+            CAPACITY, []() { return new Point(0, 0); },
+            [](Point* p) {
+                p->x_ = 0;
+                p->y_ = 0;
+            },
+            [](Point* p) { delete p; });
+        p2 = pool.Get();
+        pool.Put(p2);
+        p1 = pool.GetShared();
+    }
+    EXPECT_EQ(p1.get(), p2);
+    p1->x_ = 100;
+    p2->y_ = 100;
+}
+
+TEST(ObjectPool, OutOfCapacity) {
+    const size_t CAPACITY = 256;  // CAPACITY is not the actual capacity, the actual capacity may has little diff
+    ::med::ObjectPool<Point> pool(
+        CAPACITY, []() { return new Point(0, 0); },
+        [](Point* p) {
+            p->x_ = 0;
+            p->y_ = 0;
+        },
+        [](Point* p) { delete p; });
+
+    // fill data
+    {
+        std::vector<Point*> data_list;
+        for (int idx = 0; idx < CAPACITY * 2; ++idx) {
+            auto d = pool.Get();
+            data_list.push_back(d);
+        }
+        for (auto d : data_list) {
+            pool.Put(d);
+        }
+    }
+
+    // try get data, when empty, get nullptr
+    {
+        std::vector<Point*> data_list;
+        for (int idx = 0; idx < CAPACITY * 2; ++idx) {
+            auto d = pool.TryGet();
+            if (idx < CAPACITY - 50) {
+                EXPECT_NE(d, nullptr);
+            }
+            if (idx > CAPACITY + 50) {
+                EXPECT_EQ(d, nullptr);
+            }
+            data_list.push_back(d);
+        }
+        for (auto d : data_list) {
+            pool.Put(d);
+        }
+    }
+
+    // try get data, when empty, get nullptr
+    {
+        std::vector<std::shared_ptr<Point>> data_list;
+        for (int idx = 0; idx < CAPACITY * 2; ++idx) {
+            auto d = pool.TryGetShared();
+            if (idx < CAPACITY - 50) {
+                EXPECT_NE(d, nullptr);
+            }
+            if (idx > CAPACITY + 50) {
+                EXPECT_EQ(d, nullptr);
+            }
+            data_list.push_back(d);
+        }
+    }
 }

@@ -30,7 +30,8 @@ add_executable(
     unittest/configparser/test.cpp
 )
 
-target_link_libraries(cpp_toolkit_test GTest::gtest_main)
+target_link_libraries(cpp_toolkit_test GTest::gtest_main -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer)
+target_compile_options(cpp_toolkit_test PRIVATE -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer)
 
 include(GoogleTest)
 gtest_discover_tests(cpp_toolkit_test)
