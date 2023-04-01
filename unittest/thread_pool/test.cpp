@@ -2,7 +2,7 @@
 #include <thread>
 #include <chrono>
 #include <future>
-#include "threadpool/thread_pool.h"
+#include "thread_pool/thread_pool.h"
 
 TEST(ThreadPool, Basic) {
     ::med::ThreadPool pool(2);

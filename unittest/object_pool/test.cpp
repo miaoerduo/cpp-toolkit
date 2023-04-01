@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "objectpool/object_pool.h"
+#include "object_pool/object_pool.h"
 
 #include <vector>
 

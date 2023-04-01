@@ -4,7 +4,7 @@
 #include <sstream>
 #include <string>
 #include <unordered_map>
-#include "configparser/config_parser.h"
+#include "config_parser/config_parser.h"
 
 using namespace med;
 

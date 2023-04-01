@@ -109,7 +109,7 @@ template <typename _Key, typename _T, bool enable_ttl = false, typename _Hash = 
 class ConcurrentLRUCache {
 public:
     ConcurrentLRUCache(int capacity, int shard) : capacity_(capacity), shard_(shard), ttl_(0) {
-        static_assert(!enable_ttl);
+        static_assert(!enable_ttl, "ConcurrentLRUCache(int, int) is available when enable_ttl=false");
         this->init();
     }
     ConcurrentLRUCache(int capacity, int shard, int ttl) : capacity_(capacity), shard_(shard), ttl_(ttl) {

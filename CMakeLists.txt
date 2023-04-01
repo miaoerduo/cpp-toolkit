@@ -24,14 +24,19 @@ enable_testing()
 
 add_executable(
     cpp_toolkit_test
-    unittest/objectpool/test.cpp
-    unittest/threadpool/test.cpp
-    unittest/concurrentlrucache/test.cpp
-    unittest/configparser/test.cpp
+    unittest/object_pool/test.cpp
+    unittest/thread_pool/test.cpp
+    unittest/concurrent_lru_cache/test.cpp
+    unittest/config_parser/test.cpp
 )
 
-target_link_libraries(cpp_toolkit_test GTest::gtest_main -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer)
-target_compile_options(cpp_toolkit_test PRIVATE -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer)
+IF (CMAKE_SYSTEM_NAME MATCHES "Darwin")
+    target_link_libraries(cpp_toolkit_test GTest::gtest_main -fno-omit-frame-pointer)
+    target_compile_options(cpp_toolkit_test PRIVATE -fno-omit-frame-pointer) 
+ELSE ()
+    target_link_libraries(cpp_toolkit_test GTest::gtest_main -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -lpthread)
+    target_compile_options(cpp_toolkit_test PRIVATE -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -lpthread)
+ENDIF()
 
 include(GoogleTest)
 gtest_discover_tests(cpp_toolkit_test)
