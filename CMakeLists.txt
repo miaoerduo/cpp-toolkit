@@ -28,6 +28,7 @@ add_executable(
     unittest/thread_pool/test.cpp
     unittest/concurrent_lru_cache/test.cpp
     unittest/config_parser/test.cpp
+    unittest/double_buffer/test.cpp
 )
 
 IF (CMAKE_SYSTEM_NAME MATCHES "Darwin")
