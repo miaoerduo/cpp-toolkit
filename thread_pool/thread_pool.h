@@ -18,11 +18,15 @@ public:
         for (size_t i = 0; i < concurrency_num; ++i)
             this->workers_.emplace_back([this] {
                 while (1) {
-                    std::function<void()> task;
-                    if (!this->task_queue_.wait_dequeue_timed(task, 1000) && this->stop_) {
+                    std::function<void()> task = nullptr;
+                    bool ok = this->task_queue_.wait_dequeue_timed(task, 1000);
+                    if (ok && task != nullptr) {
+                        task();
+                        continue;
+                    }
+                    if (this->stop_ && this->task_queue_.size_approx() == 0) {
                         break;
                     }
-                    task();
                 }
             });
     }

@@ -36,7 +36,7 @@ IF (CMAKE_SYSTEM_NAME MATCHES "Darwin")
     target_compile_options(cpp_toolkit_test PRIVATE -fno-omit-frame-pointer) 
 ELSE ()
     target_link_libraries(cpp_toolkit_test GTest::gtest_main -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer)
-    target_compile_options(cpp_toolkit_test PRIVATE -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -lpthread)
+    target_compile_options(cpp_toolkit_test PRIVATE -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer)
 ENDIF()
 
 include(GoogleTest)
